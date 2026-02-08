@@ -25,17 +25,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")   // Matches your UserServiceImpl role
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")   
                         .requestMatchers("/student/**").hasAuthority("STUDENT")
                         .anyRequest().authenticated()
                 )
 
-                // 3. Login Configuration
+             
                 .formLogin(form -> form
-                        .loginPage("/login")               // Matches your login.html controller
-                        .loginProcessingUrl("/login")      // The URL the form submits to
+                        .loginPage("/login")               
+                        .loginProcessingUrl("/login")      
                         .successHandler((request, response, authentication) -> {
-                            // Smart Redirect: Admin -> Admin Dashboard, Student -> Student Dashboard
                             var roles = authentication.getAuthorities();
                             String redirectUrl = "/student/dashboard";
                             for (var role : roles) {
@@ -48,7 +47,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
 
-                // 4. Logout Configuration
+              
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
@@ -60,3 +59,4 @@ public class SecurityConfig {
 
 
 }
+
