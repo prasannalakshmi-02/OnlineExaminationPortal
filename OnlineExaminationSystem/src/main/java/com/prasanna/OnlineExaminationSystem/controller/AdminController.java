@@ -27,32 +27,30 @@ public class AdminController {
     @Autowired
     private ResultService resultService;
 
-    // 1. Admin Dashboard (Lists all exams)
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
-        // Fetch all exams to display in a table
+     
         List<Exam> exams = examService.getAllExams();
 
-        // Add data to the model so Thymeleaf can access it as ${exams}
+      
         model.addAttribute("exams", exams);
 
-        return "admin/dashboard"; // This looks for admin/dashboard.html
+        return "admin/dashboard"; 
     }
 
     @GetMapping("/add-exam")
     public String showAddExamForm(Model model) {
-        model.addAttribute("exam", new Exam()); // Bind empty object to form
+        model.addAttribute("exam", new Exam()); 
         return "admin/add-exam";
     }
 
-    // Process the form submission
     @PostMapping("/add-exam")
     public String addExam(@ModelAttribute Exam exam) {
         examService.addExam(exam);
-        return "redirect:/admin/dashboard"; // Go back to dashboard after saving
+        return "redirect:/admin/dashboard"; 
     }
 
-    // View all questions for a specific exam
+
     @GetMapping("/exam/{id}/questions")
     public String viewQuestions(@PathVariable Long id, Model model) {
         Exam exam = examService.getExamById(id);
@@ -64,35 +62,32 @@ public class AdminController {
         return "admin/view-questions";
     }
 
-    // Show "Add Question" form (Pass the exam ID to the form!)
+    
     @GetMapping("/exam/{id}/add-question")
     public String showAddQuestionForm(@PathVariable Long id, Model model) {
         Question question = new Question();
-        // We need to link this question to the exam
+        
         question.setExam(examService.getExamById(id));
 
         model.addAttribute("question", question);
-        model.addAttribute("examId", id); // Pass ID to keep track
+        model.addAttribute("examId", id); 
 
         return "admin/add-question";
     }
 
-    // Process the "Add Question" form
+    
     @PostMapping("/add-question")
     public String addQuestion(@ModelAttribute Question question, @RequestParam("examId") Long examId) {
-        // 1. Fetch the exam object using the ID from the form
+       
         Exam exam = examService.getExamById(examId);
 
-        // 2. Link the exam to the question
         question.setExam(exam);
 
-        // 3. Save
         questionService.addQuestion(question);
 
-        return "redirect:/admin/exam/" + examId + "/questions"; // Redirect back to question list
+        return "redirect:/admin/exam/" + examId + "/questions"; 
     }
 
-    // View All Student Results
     @GetMapping("/results")
     public String viewAllResults(Model model) {
         List<Result> results = resultService.getAllResults();
@@ -101,20 +96,19 @@ public class AdminController {
     }
 
 
-    // 1. Show the Edit Form
+
     @GetMapping("/question/edit/{id}")
     public String showEditQuestionForm(@PathVariable Long id, Model model) {
         Question question = questionService.getQuestionById(id);
         model.addAttribute("question", question);
-        // We need the exam ID to redirect back to the right list later
         model.addAttribute("examId", question.getExam().getId());
         return "admin/edit-question";
     }
 
-    // 2. Process the Update
     @PostMapping("/question/update/{id}")
     public String updateQuestion(@PathVariable Long id, @ModelAttribute Question question, @RequestParam("examId") Long examId) {
         questionService.updateQuestion(id, question);
         return "redirect:/admin/exam/" + examId + "/questions";
     }
 }
+
